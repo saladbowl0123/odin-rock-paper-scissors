@@ -36,8 +36,9 @@ function playGame(numRounds) {
 
   function playRound(roundNo, humanChoice, computerChoice) {
     console.log(`${ROUND} ${roundNo}`);
-    roundStatus = (CHOICES.indexOf(humanChoice)
-      - CHOICES.indexOf(computerChoice)) % 3;
+    roundStatus = CHOICES.indexOf(humanChoice)
+      - CHOICES.indexOf(computerChoice);
+    if (roundStatus < 0) roundStatus += 3;
     switch (roundStatus) {
       case 0:
         console.log(`${DRAW}: ${humanChoice}`);
