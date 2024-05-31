@@ -1,66 +1,68 @@
 const CHOICES = ["rock", "paper", "scissors"];
-const ROUND = `Round`;
-const DRAW = `Draw`;
-const WIN = `Win`;
-const LOSE = `Lose`;
-const HUMAN_SCORE = `Human score`;
-const COMPUTER_SCORE = `Computer score`;
+const WINNERS = ["draw", "human", "computer"];
 
-let roundNo = 1;
+let roundNo = 0;
 let humanScore = 0;
 let computerScore = 0;
-let winner;
+let roundWinnerId;
+let roundWinner;
+let gameWinnerId;
+let gameWinner;
 
 const divRoundNo = document.querySelector("#div-round-no");
-const btns = document.querySelector("#btns");
+const divBtns = document.querySelector("#div-btns");
 const divResults = document.querySelector("#div-results");
 
-btns.addEventListener("click", (event) => {
+divBtns.addEventListener ("click", btnClick);
+
+function btnClick (event) {
   let target = event.target;
+  let playerChoiceId;
   switch (target.id) {
     case "btn-rock":
-      playRound(CHOICES[0], getComputerChoice());
+      playerChoiceId = 0;
       break;
     case "btn-paper":
-      playRound(CHOICES[1], getComputerChoice());
+      playerChoiceId = 1;
       break;
     default:
-      playRound(CHOICES[2], getComputerChoice());
+      playerChoiceId = 2;
   }
-});
-
-function getComputerChoice() {
-  let x = Math.random();
-  if (x < 1 / 3) {
-    return CHOICES[0];
-  } else if (x < 2 / 3) {
-    return CHOICES[1];
-  }
-  return CHOICES[2];
+  playRound(CHOICES[playerChoiceId], getComputerChoice());
 }
 
-function playRound(humanChoice, computerChoice) {
-  divRoundNo.textContent = `${ROUND}: ${roundNo}`;
-  roundStatus = CHOICES.indexOf(humanChoice)
+function getComputerChoice () {
+  return CHOICES[Math.floor(Math.random() * 3)];
+}
+
+function playRound (humanChoice, computerChoice) {
+  ++roundNo;
+  divRoundNo.textContent = `Round: ${roundNo}`;
+  roundWinnerId = CHOICES.indexOf(humanChoice)
     - CHOICES.indexOf(computerChoice);
-  if (roundStatus < 0) roundStatus += 3;
-  let status = "";
-  switch (roundStatus) {
+  if (roundWinnerId < 0) roundWinnerId += 3;
+  roundWinner = WINNERS[roundWinnerId];
+  divResults.textContent = `Round winner: ${roundWinner}`;
+  switch (roundWinnerId) {
     case 0:
-      status = `${DRAW}: ${humanChoice}`;
+      divResults.textContent += `; ${humanChoice} and ${computerChoice}`;
       break;
     case 1:
-      status = `${WIN}: ${humanChoice} beats ${computerChoice}`;
+      divResults.textContent += `; ${humanChoice} beats ${computerChoice}`;
       ++humanScore;
       break;
     default:
-      status = `${LOSE}: ${computerChoice} beats ${humanChoice}`;
+      divResults.textContent += `; ${computerChoice} beats ${humanChoice}`;
       ++computerScore;
   }
-  divResults.textContent = `${status}; ${HUMAN_SCORE}: ${humanScore}; ${COMPUTER_SCORE}: ${computerScore}`;
-  if (roundNo == 5) {
-    humanScore > computerScore ? winner = "Human" : winner = "Computer";
-  }
-  if (winner) divResults.textContent += `; Winner: ${winner}`;
-  ++roundNo;
+  divResults.textContent += `; human score: ${humanScore}; computer score: ${computerScore}`;
+  if (roundNo >= 5) announceGameWinner();
+}
+
+function announceGameWinner () {
+  gameWinnerId = Math.sign(humanScore - computerScore);
+  if (gameWinnerId == -1) gameWinnerId = 2;
+  gameWinner = WINNERS[gameWinnerId];
+  divResults.textContent += `; game winner: ${gameWinner}`;
+  divBtns.removeEventListener("click", btnClick);
 }
