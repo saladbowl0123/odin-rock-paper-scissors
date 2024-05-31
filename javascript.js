@@ -41,8 +41,9 @@ function getComputerChoice() {
 
 function playRound(humanChoice, computerChoice) {
   divRoundNo.textContent = `${ROUND}: ${roundNo}`;
-  roundStatus = (CHOICES.indexOf(humanChoice)
-    - CHOICES.indexOf(computerChoice)) % 3;
+  roundStatus = CHOICES.indexOf(humanChoice)
+    - CHOICES.indexOf(computerChoice);
+  if (roundStatus < 0) roundStatus += 3;
   let status = "";
   switch (roundStatus) {
     case 0:
