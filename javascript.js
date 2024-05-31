@@ -1,5 +1,33 @@
 const CHOICES = ["rock", "paper", "scissors"];
-const HUMAN_CHOICE_PROMPT = `Enter ${CHOICES[0]}, ${CHOICES[1]}, or ${CHOICES[2]}:`;
+const ROUND = `Round`;
+const DRAW = `Draw`;
+const WIN = `Win`;
+const LOSE = `Lose`;
+const HUMAN_SCORE = `Human score`;
+const COMPUTER_SCORE = `Computer score`;
+
+let roundNo = 1;
+let humanScore = 0;
+let computerScore = 0;
+let winner;
+
+const divRoundNo = document.querySelector("#div-round-no");
+const btns = document.querySelector("#btns");
+const divResults = document.querySelector("#div-results");
+
+btns.addEventListener("click", (event) => {
+  let target = event.target;
+  switch (target.id) {
+    case "btn-rock":
+      playRound(CHOICES[0], getComputerChoice());
+      break;
+    case "btn-paper":
+      playRound(CHOICES[1], getComputerChoice());
+      break;
+    default:
+      playRound(CHOICES[2], getComputerChoice());
+  }
+});
 
 function getComputerChoice() {
   let x = Math.random();
@@ -11,62 +39,27 @@ function getComputerChoice() {
   return CHOICES[2];
 }
 
-function getHumanChoice() {
-  let humanChoice;
-  do {
-    humanChoice = prompt(HUMAN_CHOICE_PROMPT).toLowerCase();
-  } while (!CHOICES.includes(humanChoice));
-  return humanChoice;
+function playRound(humanChoice, computerChoice) {
+  divRoundNo.textContent = `${ROUND}: ${roundNo}`;
+  roundStatus = (CHOICES.indexOf(humanChoice)
+    - CHOICES.indexOf(computerChoice)) % 3;
+  let status = "";
+  switch (roundStatus) {
+    case 0:
+      status = `${DRAW}: ${humanChoice}`;
+      break;
+    case 1:
+      status = `${WIN}: ${humanChoice} beats ${computerChoice}`;
+      ++humanScore;
+      break;
+    default:
+      status = `${LOSE}: ${computerChoice} beats ${humanChoice}`;
+      ++computerScore;
+  }
+  divResults.textContent = `${status}; ${HUMAN_SCORE}: ${humanScore}; ${COMPUTER_SCORE}: ${computerScore}`;
+  if (roundNo == 5) {
+    humanScore > computerScore ? winner = "Human" : winner = "Computer";
+  }
+  if (winner) divResults.textContent += `; Winner: ${winner}`;
+  ++roundNo;
 }
-
-function playGame(numRounds) {
-
-  const ROUND = `Round`;
-  const DRAW = `Draw`;
-  const WIN = `Win`;
-  const LOSE = `Lose`;
-  const HUMAN_SCORE = `Human score`;
-  const COMPUTER_SCORE = `Computer score`;
-  const HUMAN_WIN_GAME = `Human wins the game`;
-  const COMPUTER_WIN_GAME = `Computer wins the game`;
-  const DRAW_GAME = `Game draw`;
-
-  let humanScore = 0;
-  let computerScore = 0;
-
-  function playRound(roundNo, humanChoice, computerChoice) {
-    console.log(`${ROUND} ${roundNo}`);
-    roundStatus = (CHOICES.indexOf(humanChoice)
-      - CHOICES.indexOf(computerChoice)) % 3;
-    switch (roundStatus) {
-      case 0:
-        console.log(`${DRAW}: ${humanChoice}`);
-        break;
-      case 1:
-        console.log(`${WIN}: ${humanChoice} beats ${computerChoice}`);
-        ++humanScore;
-        break;
-      default:
-        console.log(`${LOSE}: ${computerChoice} beats ${humanChoice}`);
-        ++computerScore;
-    }
-    console.log(
-      `${HUMAN_SCORE}: ${humanScore}\n${COMPUTER_SCORE}: ${computerScore}`);
-  }
-
-  for (let i = 0; i < numRounds; i++) {
-    playRound(i + 1, getHumanChoice(), getComputerChoice());
-  }
-
-  if (humanScore > computerScore) {
-    console.log(HUMAN_WIN_GAME);
-  } else if (humanScore < computerScore) {
-    console.log(COMPUTER_WIN_GAME);
-  } else {
-    console.log(DRAW_GAME);
-  }
-}
-
-let numRounds = 5;
-
-playGame(numRounds);
